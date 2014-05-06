@@ -16,7 +16,14 @@
 
 package com.vaadin.s4v;
 
-import com.vaadin.s4v.transformer.VaadinComponentClassTransformer;
+import java.lang.instrument.UnmodifiableClassException;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Component;
+
+import com.vaadin.s4v.instrument.VaadinComponentClassTransformer;
+import com.vaadin.ui.AbstractComponent;
 
 import tr.com.serkanozal.jillegal.agent.JillegalAgent;
 
@@ -27,6 +34,7 @@ import tr.com.serkanozal.jillegal.agent.JillegalAgent;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
+@Component
 public class SpringIntegrator {
 
 	static {
@@ -35,14 +43,22 @@ public class SpringIntegrator {
 	
 	private static volatile boolean integrated = false;
 	
-	private SpringIntegrator() {
-		
+	@PostConstruct
+	protected void init() {
+		integrateVaadinWithSpring();
 	}
 	
 	public synchronized static void integrateVaadinWithSpring() {
 		if (!integrated) {
 			JillegalAgent.getInstrumentation().addTransformer(new VaadinComponentClassTransformer(), true);
-			integrated = true;
+			try {
+				JillegalAgent.getInstrumentation().retransformClasses(AbstractComponent.class);
+				
+				integrated = true;
+			} 
+			catch (UnmodifiableClassException e) {
+				e.printStackTrace();
+			}
 		}	
 	}
 	

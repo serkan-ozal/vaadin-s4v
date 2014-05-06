@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.vaadin.s4v.transformer;
+package com.vaadin.s4v.instrument;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,35 +50,55 @@ public class VaadinComponentClassTransformer implements ClassFileTransformer {
 	}
 	
 	protected boolean isVaadinComponentButNotExtendsFromAbstractVaadinComponent(CtClass clazz) {
-		/*
-		int i;
-        String cname = clazz.getName();
-        if (this == clazz || getName().equals(cname))
-            return true;
-
-        ClassFile file = getClassFile2();
-        String supername = file.getSuperclass();
-        if (supername != null && supername.equals(cname))
-            return true;
-
-        String[] ifs = file.getInterfaces();
-        int num = ifs.length;
-        for (i = 0; i < num; ++i)
-            if (ifs[i].equals(cname))
-                return true;
-
-        if (supername != null && cp.get(supername).subtypeOf(clazz))
-            return true;
-
-        for (i = 0; i < num; ++i)
-            if (cp.get(ifs[i]).subtypeOf(clazz))
-                return true;
-		*/
-        return false;
+		try {
+			CtClass[] interfacesDirectly = clazz.getInterfaces();
+			if (interfacesDirectly != null) {
+				for (CtClass interfaceDirectly : interfacesDirectly) {
+					if (interfaceDirectly.getName().equals("com.vaadin.ui.Component")) {
+						return true;
+					}
+				}
+			}
+			
+	        String cname = clazz.getName();
+	
+	        ClassFile file = clazz.getClassFile2();
+	        String supername = file.getSuperclass();
+	        if (supername != null && supername.equals(cname))
+	            return true;
+	
+	        String[] ifs = file.getInterfaces();
+	        int num = ifs.length;
+	        for (int i = 0; i < num; ++i) {
+	            if (ifs[i].equals(cname)) {
+	                return true;
+	            }
+	        }
+	        
+	        if (supername != null && cp.get(supername).subtypeOf(clazz)) {
+	            return true;
+	        }
+	        
+	        for (int i = 0; i < num; ++i) { 
+	            if (cp.get(ifs[i]).subtypeOf(clazz)) {
+	                return true;
+	            }
+	        }    
+		}
+		catch (Throwable t) {
+			
+		}
+		
+		return false;
 	}
 	
 	protected boolean mustBeInstrumented(CtClass clazz) {
-		return isAbstractVaadinComponent(clazz) || isVaadinComponentButNotExtendsFromAbstractVaadinComponent(clazz);
+		if (clazz.isInterface()) {
+			return false;
+		}
+		return 
+			isAbstractVaadinComponent(clazz) || 
+			isVaadinComponentButNotExtendsFromAbstractVaadinComponent(clazz);
 	}
 	
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, 
@@ -91,10 +111,12 @@ public class VaadinComponentClassTransformer implements ClassFileTransformer {
 	            cp.importPackage(UiUtil.class.getPackage().getName());
 	            cp.appendClassPath(new ClassClassPath(UiUtil.class));
 	            
+	            // Ensure that there will be at least one class initializer (or constructor)
+	            ct.makeClassInitializer();
+	            
 	            CtConstructor[] constructors = ct.getConstructors();
 	            
 	            for (CtConstructor c : constructors) {
-	            	c.insertAfter("System.out.println(\"" + className + " is hacked by Serkan ÖZAL\");");
 	            	c.insertAfter("UiUtil.injectSpringBeans(this);");
 	            }
 	            

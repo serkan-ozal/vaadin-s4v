@@ -48,7 +48,7 @@ public class SpringUtil implements ApplicationContextAware {
 			return null;
 		}
 		else {
-			return (T)applicationContext.getAutowireCapableBeanFactory().getBean(beanName);
+			return (T)applicationContext.getBean(beanName);
 		}	
 	}
 	
