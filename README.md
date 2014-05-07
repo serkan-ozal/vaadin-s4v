@@ -8,7 +8,7 @@ Usage
 
 To enable Vaadin and Spring integration automatically, there are three ways:
 
-1. Import `context.xml` of **vaadin-s4v** in your `context.xml`.
+**1)** Import `context.xml` of **vaadin-s4v** in your `context.xml`.
 
 ~~~~~ xml
 ...
@@ -20,7 +20,7 @@ To enable Vaadin and Spring integration automatically, there are three ways:
 
 or
 
-2. Automatically scan Spring beans of **vaadin-s4v** in your `context.xml`.
+**2)** Automatically scan Spring beans of **vaadin-s4v** in your `context.xml`.
 
 ~~~~~ xml
 ...
@@ -32,7 +32,7 @@ or
 
 or
 
-3. Call explicitly integrating method at startup anywhere of your application.
+**3)** Call explicitly integrating method at startup anywhere of your application.
 
 ~~~~~ java
 ...
