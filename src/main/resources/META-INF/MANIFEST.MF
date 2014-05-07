@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: serkanozal
+Build-Jdk: 1.7.0_17
+Vaadin-Package-Version: 1
+Implementation-Title: Spring for Vaadin
+Implementation-Version: 1.0.0-SNAPSHOT
