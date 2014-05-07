@@ -1,7 +1,7 @@
 What is vaadin-s4v?
 ==============
 
-**vaadin-s4v** is a **Java Instrumentation API** based integration framework to connect Vaddin UI components with beans of Spring context.
+**vaadin-s4v** is a **Java Instrumentation API** based integration framework to connect Vaddin UI components with beans of Spring context. Demo application is at [https://github.com/serkan-ozal/vaadin-s4v-demo](https://github.com/serkan-ozal/vaadin-s4v-demo).
 
 Usage
 =======
